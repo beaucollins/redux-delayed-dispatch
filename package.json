@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepackage": "`npm bin`/babel src > index.js",
     "test": "NODE_PATH=src `npm bin`/mocha --compilers js:babel-register --recursive test"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-preset-latest": "^6.16.0",
     "babel-register": "^6.18.0",
