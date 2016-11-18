@@ -49,9 +49,10 @@ export default ( { dispatch } ) => next => action => {
 				// if there is no identifier, the action is being dispatched without
 				// the chance of cancelation, so set the timer and be done
 				// there is also no existing timer to clear
-				return setTimeout( () => {
+				const id = setTimeout( () => {
 					dispatch( action.action );
 				}, action.milliseconds );
+				return { id, cancel: cancelAction( id ) };
 			}
 			// clear the timer for the associated action
 			dispatch( cancelAction( action.identifier ) );
@@ -65,7 +66,7 @@ export default ( { dispatch } ) => next => action => {
 				// dispatch the action
 				dispatch( action.action );
 			} ), action.milliseconds ) );
-			return action.identifier;
+			return { id: action.identifier, cancel: cancelAction( action.identifier ) };
 	}
 	return next( action );
 };
