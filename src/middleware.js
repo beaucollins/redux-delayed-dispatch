@@ -1,5 +1,6 @@
 const DELAYED_ACTION_TYPE = '@@delayed-dispatch/DELAYED_ACTION';
-const DELAYED_ACTION_CLEAR_TIMER_TYPE = '@@delayed-dispatch/CLEAR_TIMER';
+const DELAYED_ACTION_CANCEL_ACTION_TYPE = '@@delayed-dispatch/CANCEL_ACTION';
+const DELAYED_ACTION_CANCEL_TIMER_TYPE = '@@delayed-dispatch/CANCEL_TIMER';
 const DELAYED_ACTION_SET_TIMER_TYPE = '@@delayed-dispatch/SET_TIMER';
 
 const identifyAction = action => Object.keys( action ).sort().reduce( ( identifier, key ) => {
@@ -9,7 +10,7 @@ const identifyAction = action => Object.keys( action ).sort().reduce( ( identifi
 const IMMEDIATE = -1;
 
 export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = undefined ) => {
-	if ( identifier === undefined ) {
+	if ( identifier === undefined && typeof( action ) === 'object' ) {
 		identifier = identifyAction;
 	}
 	if ( typeof( identifier ) === 'function' ) {
@@ -21,7 +22,11 @@ export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = unde
 };
 
 export const cancelAction = identifier => ( {
-	type: DELAYED_ACTION_CLEAR_TIMER_TYPE, identifier
+	type: DELAYED_ACTION_CANCEL_ACTION_TYPE, identifier
+} );
+
+const cancelTimer = id => ( {
+	type: DELAYED_ACTION_CANCEL_TIMER_TYPE, id
 } );
 
 const addTimer = ( identifier, timer ) => ( {
@@ -32,10 +37,13 @@ const timers = {};
 
 export default ( { dispatch } ) => next => action => {
 	switch ( action.type ) {
+		case DELAYED_ACTION_CANCEL_TIMER_TYPE:
+			clearTimeout( action.id );
+			return;
 		case DELAYED_ACTION_SET_TIMER_TYPE:
 			timers[ action.identifier ] = action.timer;
 			return;
-		case DELAYED_ACTION_CLEAR_TIMER_TYPE:
+		case DELAYED_ACTION_CANCEL_ACTION_TYPE:
 			clearTimeout( timers[ action.identifier ] );
 			delete timers[ action.identifier ];
 			return;
@@ -52,7 +60,7 @@ export default ( { dispatch } ) => next => action => {
 				const id = setTimeout( () => {
 					dispatch( action.action );
 				}, action.milliseconds );
-				return { id, cancel: cancelAction( id ) };
+				return { id, cancel: cancelTimer( id ) };
 			}
 			// clear the timer for the associated action
 			dispatch( cancelAction( action.identifier ) );
@@ -62,8 +70,7 @@ export default ( { dispatch } ) => next => action => {
 			// setup the timer with the given delay
 			dispatch( addTimer( action.identifier, setTimeout( () => {
 				// clear out the existing timer
-				dispatch( cancelAction( action.identifier ) );
-				// dispatch the action
+				delete timers[ action.identifier ];
 				dispatch( action.action );
 			} ), action.milliseconds ) );
 			return { id: action.identifier, cancel: cancelAction( action.identifier ) };
