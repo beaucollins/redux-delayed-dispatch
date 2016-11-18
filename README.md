@@ -27,9 +27,9 @@ import { delayAction, cancelAction } from 'redux-delayed-dispatch';
 const myAction = ( param ) => ( { type: 'ACTION_TYPE', param } );
 
 // delays myAction for 100 ms
-const identifier = dispatch( delayAction( myAction, 100 ) );
+const { id, cancel } = dispatch( delayAction( myAction, 100 ) );
 if ( shouldCancelTimer ) {
 	// myAction will not be dispatched
-	dispatch( cancelAction( identifier ) );
+	dispatch( cancel );
 }
 ```
