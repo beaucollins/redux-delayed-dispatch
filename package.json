@@ -16,6 +16,7 @@
     "eslint-config-wpcalypso": "^0.6.0",
     "eslint-plugin-wpcalypso": "^3.0.2",
     "mocha": "^3.1.2",
+    "ramda": "^0.22.1",
     "redux": "^3.6.0"
   },
   "babel": {
@@ -24,7 +25,10 @@
     ]
   },
   "eslintConfig": {
-    "env": { "mocha": true },
+    "env": {
+      "mocha": true,
+      "node": true
+    },
     "extends": "wpcalypso"
   }
 }
