@@ -17,6 +17,7 @@
     "eslint": "^3.10.2",
     "eslint-config-wpcalypso": "^0.6.0",
     "eslint-plugin-wpcalypso": "^3.0.2",
+    "flow": "^0.2.3",
     "mocha": "^3.1.2",
     "ramda": "^0.22.1",
     "redux": "^3.6.0"

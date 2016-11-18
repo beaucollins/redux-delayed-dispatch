@@ -1,15 +1,21 @@
+// @flow
 const DELAYED_ACTION_TYPE = '@@delayed-dispatch/DELAYED_ACTION';
 const DELAYED_ACTION_CANCEL_ACTION_TYPE = '@@delayed-dispatch/CANCEL_ACTION';
 const DELAYED_ACTION_CANCEL_TIMER_TYPE = '@@delayed-dispatch/CANCEL_TIMER';
 const DELAYED_ACTION_SET_TIMER_TYPE = '@@delayed-dispatch/SET_TIMER';
 
-const identifyAction = action => Object.keys( action ).sort().reduce( ( identifier, key ) => {
+interface ReduxAction {
+	[x: string]: any,
+	type: String
+}
+
+const identifyAction = ( action: ReduxAction ) => Object.keys( action ).sort().reduce( ( identifier, key ) => {
 	return identifier.concat( `${ key }:${ action[ key ] }` );
 }, [] ).join( ';' );
 
 const IMMEDIATE = -1;
 
-export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = undefined ) => {
+export const delayAction = ( action: ReduxAction, milliseconds: number = IMMEDIATE, identifier: ?function = undefined ) => {
 	if ( identifier === undefined && typeof( action ) === 'object' ) {
 		identifier = identifyAction;
 	}
@@ -21,21 +27,21 @@ export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = unde
 	};
 };
 
-export const cancelAction = identifier => ( {
+export const cancelAction = ( identifier: string ) => ( {
 	type: DELAYED_ACTION_CANCEL_ACTION_TYPE, identifier
 } );
 
-const cancelTimer = id => ( {
+const cancelTimer = ( id: mixed ) => ( {
 	type: DELAYED_ACTION_CANCEL_TIMER_TYPE, id
 } );
 
-const addTimer = ( identifier, timer ) => ( {
+const addTimer = ( identifier:string , timer: mixed ) => ( {
 	type: DELAYED_ACTION_SET_TIMER_TYPE, identifier, timer
 } );
 
 const timers = {};
 
-export default ( { dispatch } ) => next => action => {
+export default ( { dispatch }: { dispatch: function } ) => ( next: function ) => ( action: any ) => {
 	switch ( action.type ) {
 		case DELAYED_ACTION_CANCEL_TIMER_TYPE:
 			clearTimeout( action.id );
