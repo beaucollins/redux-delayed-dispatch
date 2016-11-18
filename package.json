@@ -1,0 +1,30 @@
+{
+  "name": "redux-delayed-dispatch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_PATH=src `npm bin`/mocha --compilers js:babel-register --recursive test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-preset-latest": "^6.16.0",
+    "babel-register": "^6.18.0",
+    "eslint": "^3.10.2",
+    "eslint-config-wpcalypso": "^0.6.0",
+    "eslint-plugin-wpcalypso": "^3.0.2",
+    "mocha": "^3.1.2",
+    "redux": "^3.6.0"
+  },
+  "babel": {
+    "presets": [
+      "latest"
+    ]
+  },
+  "eslintConfig": {
+    "env": { "mocha": true },
+    "extends": "wpcalypso"
+  }
+}
