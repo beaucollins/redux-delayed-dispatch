@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepackage": "`npm bin`/babel src > index.js",
+    "prepublish": "`npm bin`/babel src > index.js",
     "test": "NODE_PATH=src `npm bin`/mocha --compilers js:babel-register --recursive test"
   },
   "author": "",
