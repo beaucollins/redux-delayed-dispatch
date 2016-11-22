@@ -7,7 +7,7 @@ import { assoc, dissoc } from 'ramda';
 /**
  * Internal dependencies
  */
-import middleware, { delayAction } from 'middleware';
+import middleware, { delayAction, cancelAction } from '../src/middleware';
 
 const reducer = ( state = {}, action ) => {
 	switch ( action.type ) {
@@ -49,6 +49,18 @@ describe( 'delayed dispatch', () => {
 		const { id, cancel } = dispatch( delayAction( remove( 'name' ), 2 ) );
 		dispatch( cancel );
 		ok( id );
+
+		setTimeout( () => {
+			ok( getState().name );
+			done();
+		}, 5 );
+	} );
+
+	it( 'should cancel action based on identifier', done => {
+		const { dispatch, getState } = store;
+		dispatch( set( 'name', 'furiosa' ) );
+		dispatch( delayAction( remove( 'name' ), 2 ) );
+		dispatch( cancelAction( remove( 'name' ) ) );
 
 		setTimeout( () => {
 			ok( getState().name );

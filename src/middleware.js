@@ -21,7 +21,12 @@ export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = unde
 	};
 };
 
-export const cancelAction = identifier => ( {
+export const cancelAction = action => ( {
+	type: DELAYED_ACTION_CANCEL_ACTION_TYPE,
+	identifier: identifyAction( action )
+} );
+
+export const cancelActionIdentifier = identifier => ( {
 	type: DELAYED_ACTION_CANCEL_ACTION_TYPE, identifier
 } );
 
@@ -73,7 +78,7 @@ export default ( { dispatch } ) => next => action => {
 				delete timers[ action.identifier ];
 				dispatch( action.action );
 			} ), action.milliseconds ) );
-			return { id: action.identifier, cancel: cancelAction( action.identifier ) };
+			return { id: action.identifier, cancel: cancelActionIdentifier( action.identifier ) };
 	}
 	return next( action );
 };
