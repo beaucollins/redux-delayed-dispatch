@@ -1,7 +1,7 @@
 const DELAYED_ACTION_TYPE = '@@delayed-dispatch/DELAYED_ACTION';
-const DELAYED_ACTION_CANCEL_ACTION_TYPE = '@@delayed-dispatch/CANCEL_ACTION';
 const DELAYED_ACTION_CANCEL_TIMER_TYPE = '@@delayed-dispatch/CANCEL_TIMER';
 const DELAYED_ACTION_SET_TIMER_TYPE = '@@delayed-dispatch/SET_TIMER';
+const DELAYED_ACTION_CANCEL_IDENTIFIER_TYPE = '@@delayed-dispatch/CANCEL_IDENTIFIER';
 
 const identifyAction = action => Object.keys( action ).sort().reduce( ( identifier, key ) => {
 	return identifier.concat( `${ key }:${ action[ key ] }` );
@@ -22,12 +22,12 @@ export const delayAction = ( action, milliseconds = IMMEDIATE, identifier = unde
 };
 
 export const cancelAction = action => ( {
-	type: DELAYED_ACTION_CANCEL_ACTION_TYPE,
+	type: DELAYED_ACTION_CANCEL_IDENTIFIER_TYPE,
 	identifier: identifyAction( action )
 } );
 
 export const cancelActionIdentifier = identifier => ( {
-	type: DELAYED_ACTION_CANCEL_ACTION_TYPE, identifier
+	type: DELAYED_ACTION_CANCEL_IDENTIFIER_TYPE, identifier
 } );
 
 const cancelTimer = id => ( {
@@ -44,14 +44,14 @@ export default ( { dispatch } ) => next => action => {
 	switch ( action.type ) {
 		case DELAYED_ACTION_CANCEL_TIMER_TYPE:
 			clearTimeout( action.id );
-			return;
+			return action;
 		case DELAYED_ACTION_SET_TIMER_TYPE:
 			timers[ action.identifier ] = action.timer;
-			return;
-		case DELAYED_ACTION_CANCEL_ACTION_TYPE:
+			return action;
+		case DELAYED_ACTION_CANCEL_IDENTIFIER_TYPE:
 			clearTimeout( timers[ action.identifier ] );
 			delete timers[ action.identifier ];
-			return;
+			return action;
 		case DELAYED_ACTION_TYPE:
 			if ( ! action.identifier ) {
 				// If there is no identifier, and the delay is IMMEDIATE,
@@ -68,7 +68,7 @@ export default ( { dispatch } ) => next => action => {
 				return { id, cancel: cancelTimer( id ) };
 			}
 			// clear the timer for the associated action
-			dispatch( cancelAction( action.identifier ) );
+			dispatch( cancelActionIdentifier( action.identifier ) );
 			if ( action.milliseconds === IMMEDIATE ) {
 				return dispatch( action.action );
 			}
