@@ -77,7 +77,7 @@ export default ( { dispatch } ) => next => action => {
 				// clear out the existing timer
 				delete timers[ action.identifier ];
 				dispatch( action.action );
-			} ), action.milliseconds ) );
+			}, action.milliseconds ) ) );
 			return { id: action.identifier, cancel: cancelActionIdentifier( action.identifier ) };
 	}
 	return next( action );
